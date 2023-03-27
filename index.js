@@ -18,26 +18,35 @@ fetch(endpoint)
 function findMatches(wordToMatch, cities) {
   return cities.filter(
     place =>
-      place.city.includes(wordToMatch) || place.state.includes(wordToMatch)
+      place.city.toLowerCase().includes(wordToMatch.toLowerCase()) ||
+      place.state.toLowerCase().includes(wordToMatch.toLowerCase())
   );
 }
 
 function displayMatches() {
+  suggestions.innerHTML = "";
+
+  if (!this.value) {
+    suggestions.innerHTML = `
+            <li>Filter for a city</li>
+            <li>or a state</li>
+        `;
+    return;
+  }
+
   let matchesHTML = "";
   const matches = findMatches(this.value, cities);
   const regEx = new RegExp(this.value, "gi");
 
-  console.log(matches);
-
   matches.map(match => {
     const city = match.city.replace(
       regEx,
-      `<span class='hl'>${this.value}</span>`
+      `<span class='highlight'>${this.value}</span>`
     );
 
     const state = match.state.replace(
       regEx,
-      `<span class='hl'>${this.value}</span>`
+      `<span class='highlight'>${this.value}</span>`
     );
 
     const population = new Intl.NumberFormat(undefined).format(
@@ -52,6 +61,5 @@ function displayMatches() {
   `;
   });
 
-  suggestions.innerHTML = "";
   suggestions.insertAdjacentHTML("afterbegin", matchesHTML);
 }
